@@ -6,15 +6,28 @@
     <title>User Management</title>
     <link rel="stylesheet" href="/php/css/bootstrap.4.4.1.css">
     <style>
-        table, th, td {
-            margin-top: 10px;
+        table {
+            width: 75%; 
+            margin: 5px auto;
+            border-collapse: collapse;
+        }
+        th, td {
             border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td.button-cell {
+            padding: 5px;
+            text-align: center; 
         }
         h1{
             text-align: center;
         }
         .button-container {
-            margin-top: 20px;
+            margin-top: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -26,122 +39,84 @@
             margin-right: 10px;
         }
     </style>
-    <script>
-        var strUserID = null;
-        var checkboxes = document.getElementsByName("ALL_CHECKBOX");
-        var ele_UserID = document.getElementsById("chk_USERID");
-        
-        function getCheckUser(strUserID)
-        {
-            alert('ok');
-            var i = 0;
-            var n = checkboxes.length;
-            for (i = 0, i < n; i++)
-            {
-                if(checkboxes[i].checked == true)
-                {
-                    ele_UserID.value = checkboxes[i].id;
-                }
-                else
-                {
-                    for (k = 0, k < n; k++)
-                    {
-                        if(checkboxes[k].id != ele_UserID.value)
-                        {
-                            checkboxes[k].checked = false;
-                        }
-                    }
-                }
-            }
-            ele_UserID = null;
-        }        
-
-        function getModifyUser(strUserID_Chk)
-        {
-            var strUserID = '';
-            var checkboxes = document.getElementsByName("ALL_CHECKBOX");
-            var isChecked = document.getElementById(strUserID_Chk).checked;
-            for (var i = 0, n = checkboxes.length; i < n; i++) {
-                if (checkboxes[i].id != sSalesPeriodID) 
-                { checkboxes[i].checked = false; }
-            }            
-            
-            if(isChecked)
-            {   
-                strUserID = document.getElementById(strUserID_Chk).id;
-            }
-            window.location.href='UserAction.php?MODE=U&USER_ID=' + strUserID;
-        }
-    </script>    
 </head>
 <body>
     <h1 class="center">User Details</h1>
-    <table style="width:100%;">
-        <thead>
-            <tr>
-                <th>Select</th>
-                <th>User Name</th>
-                <th>Location</th>
-                <th>Email</th>
-                <th>Date of Birth</th>
-                <th>User Type</th>
-                <th>Active</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $host = 'localhost';
-                $db_name = 'college';
-                $username = 'root';
-                $password = 'sasa';
-                $port = '3306';
-                $NoRecordsFound = false;
-                $conn = null; $SQL = null; $result = null; $data = null;
-                
-                $conn = new mysqli($host, $username, $password, $db_name, $port);
-                $SQL = "SELECT USER_ID, USER_NAME, USER_LOC, USER_EMAIL, USER_DOB, USER_TYPE, ACTIVE FROM USER_MAST ORDER BY USER_ID DESC";
-                $result = $conn->query($SQL);
-                $data = $result->fetch_all(MYSQLI_ASSOC);
-                if($data)
-                {
-                    foreach($data as $row)
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <!--<th>Select</th>-->
+                    <th>User Name</th>
+                    <th>Location</th>
+                    <th>Email</th>
+                    <th>Date of Birth</th>
+                    <th>User Type</th>
+                    <th>Active</th>
+                    <th style='text-align:center; vertical-align:middle'>Modify</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    /*$host = 'localhost';
+                    $db_name = 'college';
+                    $username = 'root';
+                    $password = 'sasa';
+                    $port = '3306';*/
+
+                    require 'config.php';
+
+                    $NoRecordsFound = false;
+                    $conn = null; $SQL = null; $result = null; $data = null;
+                    
+                    $conn = new mysqli($host, $username, $password, $db_name, $port);
+                    $SQL = "SELECT USER_ID, USER_NAME, USER_LOC, USER_EMAIL, DATE_FORMAT(USER_DOB, '%d/%m/%Y') AS USER_DOB, USER_TYPE, ACTIVE FROM USER_MAST ORDER BY USER_ID DESC";
+                    $result = $conn->query($SQL);
+                    $data = $result->fetch_all(MYSQLI_ASSOC);
+                    if($data)
                     {
-            ?>                         
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="ALL_CHECKBOX" id="<?php echo $row['USER_ID']; ?>" onclick="getCheckUser('<?php echo $row['USER_ID']; ?>');" />
-                            </td>
-                            <td><span><?php echo $row['USER_NAME']; ?></span></td>
-                            <td><span><?php echo $row['USER_LOC']; ?></span></td>
-                            <td><span><?php echo $row['USER_EMAIL']; ?></span></td>
-                            <td><span><?php echo $row['USER_DOB']; ?></span></td>
-                            <td><span><?php echo $row['USER_TYPE']; ?></span></td>
-                            <td><span><?php echo $row['ACTIVE']; ?></span></td>
-                        </tr>
-            <?php
+                        foreach($data as $row)
+                        {
+                ?>                         
+                            <tr>
+                                <td><span><?php echo $row['USER_NAME']; ?></span></td>
+                                <td><span><?php echo $row['USER_LOC']; ?></span></td>
+                                <td><span><?php echo $row['USER_EMAIL']; ?></span></td>
+                                <td><span><?php echo $row['USER_DOB']; ?></span></td>
+                                <td><span><?php echo $row['USER_TYPE']; ?></span></td>
+                                <td><span><?php echo $row['ACTIVE']; ?></span></td>
+                                <td style='text-align:center; vertical-align:middle'><button onclick="window.location.href='UserAction.php?MODE=V&USERID=<?php echo $row['USER_ID']; ?>'
+                                                    <?php echo $NoRecordsFound ? 'disabled': ''; ?>;">Modify User</button></td>
+                            </tr>
+                <?php
+                        }
                     }
-                }
-                else
-                {
-                    $NoRecordsFound = true;
-            ?>
+                    else
+                    {
+                        $NoRecordsFound = true;
+                ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center;">
+                            <?php echo "No Records Found!"; ?>
+                            </td>
+                        </tr>
+                <?php
+                    }
+                    $conn->close(); $conn = null; $SQL = null; $result = null; $data = null;
+                ?>  
                     <tr>
-                        <td colspan="7" style="text-align: center;">
-                        <?php echo "No Records Found!"; ?>
+                        <td colspan="7">
+                            <div class="button-container">
+                                <div class="left-buttons">
+                                <button onclick="window.location.href='UserAction.php?MODE=I';">Add New User</button>
+                                </div>
+                                <button onclick="window.close();">Cancel</button>
+                            </div>
                         </td>
                     </tr>
-            <?php
-                }
-            ?>  
-        </tbody>
-    </table>
-    <div class="button-container">
-        <div class="left-buttons">
-            <button onclick="window.location.href='UserAction.php?MODE=I';">Add New User</button>
-            <button onclick="getModifyUser();" <?php echo $NoRecordsFound ? 'disabled': ''; ?>>Modify User</button>
-        </div>
-        <button onclick="window.close();">Cancel</button>
+            </tbody>
+        </table>
     </div>
-    <input type="hidden" id="chk_USERID" value=''>; 
+    <input type="hidden" id="chk_USERID" value=''/> 
 </body>
 </html>
