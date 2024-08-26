@@ -175,10 +175,6 @@
         });        
     </script>
     <script>
-        function getRedirect_to_Home()
-        {
-            window.location.href = 'UserMgmt.php';
-        }
         function Submit_Data(sURL)
         {
             var sURL = 'UserAction.php?MODE=<?php echo $Mode=="I"? "I" : "U&USER_ID=". $USER_ID ;?>';
