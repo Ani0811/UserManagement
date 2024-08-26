@@ -23,7 +23,7 @@
     $message = '';
     $message_type = '';
     
-    $b_No_Record_Found = 0;
+    $b_Enable = 0;
     $sRedirectURL = 'http://' . $_SERVER['SERVER_NAME'] . "/php/UserMgmt.php";
 
     //$s_URL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
@@ -69,7 +69,7 @@
                     {
                         $message = "Error: User not found !.Click on <BACK TO VIEW>.";
                         echo '<script language="javascript">alert("'. $message .'")</script>';
-                        $b_No_Record_Found = 1;
+                        $b_Enable = 1;
                 }
                     $conn->close(); 
                     $conn = null; $result = null; $data = null; $SQL = null;  
@@ -78,26 +78,27 @@
         //}
         if($_SERVER['REQUEST_METHOD'] == 'POST')
         {
+            $user_name = $_POST['username'];
+            $loc = $_POST['loc'];
+            $email = $_POST['email'];
+            $DOB = $_POST['DOB'];
+            $uType = $_POST['uType'];
+            $uActive = $_POST['uActive'];
+            $pwd = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
             $conn = new mysqli($host, $username, $password, $db_name, $port);
             //echo $conn ->ping();
             if(!($conn -> connect_error))
             {
                 if($Mode == 'I')
                 {
-                    $user_name = $_POST['username'];
-                    $loc = $_POST['loc'];
-                    $email = $_POST['email'];
-                    $DOB = $_POST['DOB'];
-                    $uType = $_POST['uType'];
-                    $uActive = $_POST['uActive'];
-                    $pwd = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-                    $stmt = $conn -> prepare("INSERT INTO USER_MAST 
-                                                            (
-                                                            USER_NAME, USER_LOC, USER_EMAIL, USER_DOB,
-                                                            USER_TYPE, ACTIVE, USER_PASSWORD
-                                                            )
-                                                        VALUES (?, ?, ?, STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?)");
+                    $SQL = "INSERT INTO USER_MAST 
+                                            (
+                                                USER_NAME, USER_LOC, USER_EMAIL, USER_DOB,
+                                                USER_TYPE, ACTIVE, USER_PASSWORD
+                                            )
+                                    VALUES (?, ?, ?, STR_TO_DATE(?, '%d/%m/%Y'), ?, ?, ?)";
+                    $stmt = $conn -> prepare($SQL);
                     if($stmt)
                     {
                         $stmt -> bind_param("sssssss", $user_name, $loc, $email, $DOB, $uType, $uActive, $pwd);
@@ -106,10 +107,9 @@
                             $message = "Registration successful ! Do you want add another user? [Yes/No]";
 
                             //echo '<script language="javascript">alert("'. $message .'"); get_Clear_form();</script>';
-                            echo '<script language="javascript">confirm("'. $message .'"); get_Clear_form();</script>';
-                            $user_name = ''; $loc = ''; $email = ''; $DOB = ''; $uType = ''; $uActive = ''; $pwd = '';
+                            echo '<script language="javascript">if(confirm("'. $message .'") == true){ get_Clear_form(); } else { location.href = "UserMgmt.php"; }</script>';
                         }
-                        else 
+                        else
                         {
                             $message = "Error: " . $stmt->error;
                             echo '<script language="javascript">alert("'. $message .'");</script>';
@@ -119,14 +119,6 @@
                 }
                 else if($Mode == 'U')
                 {
-                    $user_name = $_POST['username'];
-                    $loc = $_POST['loc'];
-                    $email = $_POST['email'];
-                    $DOB = $_POST['DOB'];
-                    $uType = $_POST['uType'];
-                    $uActive = $_POST['uActive'];
-                    $pwd = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            
                     $SQL = "UPDATE USER_MAST SET USER_NAME = ?, USER_LOC = ?, USER_EMAIL = ?, 
                                                  USER_DOB = STR_TO_DATE(?, '%d/%m/%Y'), USER_TYPE = ?, ACTIVE = ?,
                                                  USER_PASSWORD = ? 
@@ -138,55 +130,23 @@
                         if($stmt -> execute())
                         {
                             $message = "User details updated successfully";
-                            echo '<script language="javascript">alert("'. $message .'"); get_Clear_form();</script>';
+                            echo '<script language="javascript">alert("'. $message .'"); </script>';
                         }
                         else
                         {
                             $message = "Error: " . $stmt->error;
                             echo '<script language="javascript">alert("'. $message .'");</script>';
                         }
+                        $b_Enable = 1;
                     }
                 }
             }
             $conn -> close();
+            $user_name = ''; $loc = ''; $email = ''; $DOB = ''; $uType = ''; $uActive = ''; $pwd = '';            
         }
     }
-    catch(Exception $e) {  $message = "Error: " . $e->getMessage(); echo '<script language="javascript">alert("'. $message .'")</script>';}
+    catch(Exception $e) { $message = "Error: " . $e->getMessage(); echo '<script language="javascript">alert("'. $message .'")</script>'; }
     finally { $conn = null; $stmt = null; $SQL = null;}
-
-    /*
-    function getCheckQryString()
-    {
-        $sRedirectURL = 'http://' . $_SERVER['SERVER_NAME'] . "/php/UserMgmt.php";
-        try
-        {
-            if(strlen($_SERVER['QUERY_STRING']) > 0)
-            {
-                parse_str($_SERVER['QUERY_STRING'], $s_Qry);
-                if(count($s_Qry) == 1)
-                {
-                    $Mode = $s_Qry['MODE']; 
-                    if(!$s_Qry['MODE']) { throw new Exception(redirect($sRedirectURL)); }
-                }
-                else if(count($s_Qry) == 2)
-                {
-                    $Mode = $s_Qry['MODE'];
-                    if(!$s_Qry['MODE']) { throw new Exception(redirect($sRedirectURL)); }
-
-                    $USER_ID = $s_Qry['USERID'];
-                    if(!$s_Qry['USERID']) { throw new Exception(redirect($sRedirectURL)); }
-                }
-                else { redirect($sRedirectURL); }
-
-                if($Mode != 'I') { redirect($sRedirectURL); }
-                if($Mode != 'U') { redirect($sRedirectURL); }
-                if($Mode != 'V') { redirect($sRedirectURL); }
-            }
-            else if (strlen($_SERVER['QUERY_STRING']) == 0) { redirect($sRedirectURL); }
-        }
-        catch(Exception $e) { redirect($sRedirectURL); }
-    }
-*/
     function redirect($url) 
     {
         header('Location: '.$url);
@@ -215,10 +175,16 @@
         });        
     </script>
     <script>
+        /*function getRedirect_to_Home()
+        {
+            var sURL = 'UserMgmt.php';
+            document.forms[0].action = sURL;
+            document.forms[0].submit();
+        }*/
         function Submit_Data(sURL)
         {
             var sURL = 'UserAction.php?MODE=<?php echo $Mode=="I"? "I" : "U&USER_ID=". $USER_ID ;?>';
-            document.forms[0].action = sURL; //'UserAction.php?MODE=I';
+            document.forms[0].action = sURL;
             document.forms[0].submit();
         }
         function get_Clear_form()
@@ -228,15 +194,16 @@
             document.getElementById('email').value = '';
             document.getElementById('DOB').value = '';
             
-            var uType = document.getElementById('uType');
-            uType.selectedIndex = 0;
+            var e_uType = document.getElementById('uType');
+            e_uType.selectedIndex = 0; e_uType = null;
             
-            var uActive = document.getElementById('uActive');
-            uActive.selectedIndex = 0;
+            var e_uActive = document.getElementById('uActive');
+            e_uActive.selectedIndex = 0; e_uActive = null;
 
             document.getElementById('password').value = '';
+            
             var btn_B_T_V = document.getElementById('btn_B_T_V')
-            btn_B_T_V.setfocus();
+            btn_B_T_V.setfocus(); btn_B_T_V = null;
         }
     </script>    
 </head>
@@ -344,7 +311,7 @@
                         <td colspan="2" class="button-cell">
                             <div class="button-container">
                                 <button id="btn_B_T_V" onclick="window.location.href='UserMgmt.php';">Back To View</button>
-                                <button id="btnSubmit" type="button" onclick="Submit_Data();" <?php if($b_No_Record_Found == 1) { ?> disabled <?php } ?>><?php echo $Mode == 'I' ? 'Register' : 'Update'; ?>
+                                <button id="btnSubmit" type="button" onclick="Submit_Data();" <?php if($b_Enable == 1) { ?> disabled <?php } ?>><?php echo $Mode == 'I' ? 'Register' : 'Update'; ?>
                                 </button>
                             </div>
                         </td>
