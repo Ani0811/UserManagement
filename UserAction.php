@@ -103,9 +103,10 @@
                         $stmt -> bind_param("sssssss", $user_name, $loc, $email, $DOB, $uType, $uActive, $pwd);
                         if ($stmt->execute()) 
                         {
-                            $message = "Registration successful!";
-                            echo '<script language="javascript">alert("'. $message .'"); get_Clear_form();</script>';
+                            $message = "Registration successful ! Do you want add another user? [Yes/No]";
 
+                            //echo '<script language="javascript">alert("'. $message .'"); get_Clear_form();</script>';
+                            echo '<script language="javascript">confirm("'. $message .'"); get_Clear_form();</script>';
                             $user_name = ''; $loc = ''; $email = ''; $DOB = ''; $uType = ''; $uActive = ''; $pwd = '';
                         }
                         else 
@@ -153,6 +154,7 @@
     catch(Exception $e) {  $message = "Error: " . $e->getMessage(); echo '<script language="javascript">alert("'. $message .'")</script>';}
     finally { $conn = null; $stmt = null; $SQL = null;}
 
+    /*
     function getCheckQryString()
     {
         $sRedirectURL = 'http://' . $_SERVER['SERVER_NAME'] . "/php/UserMgmt.php";
@@ -184,6 +186,7 @@
         }
         catch(Exception $e) { redirect($sRedirectURL); }
     }
+*/
     function redirect($url) 
     {
         header('Location: '.$url);
