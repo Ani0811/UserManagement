@@ -23,7 +23,7 @@
     $message = '';
     $message_type = '';
     
-    $b_Enable = 0;
+    $b_Disable = 0;
     $sRedirectURL = 'http://' . $_SERVER['SERVER_NAME'] . "/php/UserMgmt.php";
 
     //$s_URL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
@@ -69,7 +69,7 @@
                     {
                         $message = "Error: User not found !.Click on <BACK TO VIEW>.";
                         echo '<script language="javascript">alert("'. $message .'")</script>';
-                        $b_Enable = 1;
+                        $b_Disable = 1;
                 }
                     $conn->close(); 
                     $conn = null; $result = null; $data = null; $SQL = null;  
@@ -130,14 +130,14 @@
                         if($stmt -> execute())
                         {
                             $message = "User details updated successfully";
-                            echo '<script language="javascript">alert("'. $message .'"); </script>';
+                            echo '<script language="javascript">alert("'. $message .'"); window.location.href = "UserMgmt.php"; </script>';
                         }
                         else
                         {
                             $message = "Error: " . $stmt->error;
                             echo '<script language="javascript">alert("'. $message .'");</script>';
                         }
-                        $b_Enable = 1;
+                        $b_Disable = 1;
                     }
                 }
             }
@@ -175,12 +175,10 @@
         });        
     </script>
     <script>
-        /*function getRedirect_to_Home()
+        function getRedirect_to_Home()
         {
-            var sURL = 'UserMgmt.php';
-            document.forms[0].action = sURL;
-            document.forms[0].submit();
-        }*/
+            window.location.href = 'UserMgmt.php';
+        }
         function Submit_Data(sURL)
         {
             var sURL = 'UserAction.php?MODE=<?php echo $Mode=="I"? "I" : "U&USER_ID=". $USER_ID ;?>';
@@ -311,7 +309,7 @@
                         <td colspan="2" class="button-cell">
                             <div class="button-container">
                                 <button id="btn_B_T_V" onclick="window.location.href='UserMgmt.php';">Back To View</button>
-                                <button id="btnSubmit" type="button" onclick="Submit_Data();" <?php if($b_Enable == 1) { ?> disabled <?php } ?>><?php echo $Mode == 'I' ? 'Register' : 'Update'; ?>
+                                <button id="btnSubmit" type="button" onclick="Submit_Data();" <?php if($b_Disable == 1) { ?> disabled <?php } ?>><?php echo $Mode == 'I' ? 'Register' : 'Update'; ?>
                                 </button>
                             </div>
                         </td>
