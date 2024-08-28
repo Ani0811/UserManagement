@@ -107,7 +107,7 @@
                             $message = "Registration successful ! Do you want add another user? [Yes/No]";
 
                             //echo '<script language="javascript">alert("'. $message .'"); get_Clear_form();</script>';
-                            echo '<script language="javascript">if(confirm("'. $message .'") == true){ get_Clear_form(); } else { location.href = "UserMgmt.php"; }</script>';
+                            echo '<script language="javascript">if(confirm("'. $message .'") == true){ get_Clear_form(); } else { window.location.href = "UserMgmt.php"; }</script>';
                         }
                         else
                         {
@@ -177,6 +177,66 @@
     <script>
         function Submit_Data(sURL)
         {
+            if(document.getElementById('username').value == '')
+            {
+                alert('Username cannot be blank. Enter username.');
+                document.getElementById('username').focus();
+                return false;
+            }
+            if(document.getElementById('loc').value == '')
+            {
+                alert('Location cannot be blank. Enter location.');
+                document.getElementById('loc').focus();
+                return false;
+            }
+            if(document.getElementById('email').value == '')
+            {
+                alert('Email cannot be blank. Enter email.');
+                document.getElementById('email').focus();
+                return false;
+            }
+            if (ValidateEmail(document.getElementById('email').value) == false)
+            {
+                alert("Invalid email address!");
+                document.getElementById('email').focus();
+                return false;
+            }
+            if(document.getElementById('DOB').value == '')
+            {
+                alert('DOB cannot be blank. Enter DOB.');
+                document.getElementById('DOB').focus();
+                return false;
+            }
+            if(!validateDOB(document.getElementById('DOB')))
+            {
+                alert('Enter DOB in DD/MM/YYYY format.');
+                document.getElementById('DOB').focus();
+                return false;
+            }
+            var e_uType = document.getElementById('uType');
+            if(e_uType.selectedIndex == 0)
+            {
+                alert('Select User type [Admin / Group User].');
+                e_uType.focus();
+                return false;
+            } 
+            e_uType = null;
+            var e_uActive = document.getElementById('uActive');
+            if(e_uActive.selectedIndex == 0)
+            {
+                alert('Select User activation [Yes / No].');
+                e_uActive.focus();
+                return false;
+            } 
+            e_uActive = null;
+
+            if(document.getElementById('password').value == '')
+            {
+                alert('Password cannot be blank. Enter password.');
+                document.getElementById('password').focus();
+                return false;
+            }
+
             var sURL = 'UserAction.php?MODE=<?php echo $Mode=="I"? "I" : "U&USER_ID=". $USER_ID ;?>';
             document.forms[0].action = sURL;
             document.forms[0].submit();
@@ -196,9 +256,28 @@
 
             document.getElementById('password').value = '';
             
-            var btn_B_T_V = document.getElementById('btn_B_T_V')
-            btn_B_T_V.setfocus(); btn_B_T_V = null;
+            var btn_B_T_V = document.getElementById('btn_B_T_V');
+            btn_B_T_V.focus(); btn_B_T_V = null;
         }
+        function ValidateEmail(sEmail)
+        {
+            var reg = /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/;
+            if (reg.test(sEmail) == false)
+            {
+                return false;
+            }
+        }       
+        function validateDOB(input)
+        {
+            var dob = input.value.split("/");
+            //var data = dob.split("/");
+            // using ISO 8601 Date String
+            if (isNaN(Date.parse(dob[2] + "-" + dob[1] + "-" + dob[0]))) 
+            {
+                return false;
+            }
+            return true;
+        }        
     </script>    
 </head>
 <body>
