@@ -1,10 +1,4 @@
 <?php
-    /*$host = 'localhost';
-    $db_name = 'college';
-    $username = 'root';
-    $password = 'sasa';
-    $port = '3306';*/
-
     require 'config.php';
 
     $conn = null; $SQL = null; $result = null; $data = null;
@@ -207,12 +201,6 @@
                 document.getElementById('DOB').focus();
                 return false;
             }
-            if(!validateDOB(document.getElementById('DOB')))
-            {
-                alert('Enter DOB in DD/MM/YYYY format.');
-                document.getElementById('DOB').focus();
-                return false;
-            }
             var e_uType = document.getElementById('uType');
             if(e_uType.selectedIndex == 0)
             {
@@ -267,17 +255,6 @@
                 return false;
             }
         }       
-        function validateDOB(input)
-        {
-            var dob = input.value.split("/");
-            //var data = dob.split("/");
-            // using ISO 8601 Date String
-            if (isNaN(Date.parse(dob[2] + "-" + dob[1] + "-" + dob[0]))) 
-            {
-                return false;
-            }
-            return true;
-        }        
     </script>    
 </head>
 <body>
@@ -307,7 +284,7 @@
                     <tr>
                         <td><label for="dob">Date of Birth :</label></td>
                         <td>
-                            <input type="text" id="DOB" name="DOB" autocomplete="off" maxlength="10" value="<?php echo $DOB; ?>" required>
+                            <input type="text" id="DOB" name="DOB" autocomplete="off" readonly maxlength="10" value="<?php echo $DOB; ?>" required>
                         </td>
                     </tr>
                     <tr>
