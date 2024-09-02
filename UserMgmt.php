@@ -26,7 +26,7 @@
                 <?php
                     require 'config.php';
 
-                    $NoRecordsFound = false; $NoOfRows = 0;
+                    $NoOfRows = 0;
                     $conn = null; $SQL = null; $result = null; $data = null;
                     
                     $conn = new mysqli($host, $username, $password, $db_name, $port);
@@ -47,8 +47,7 @@
                                 <td><span><?php echo $row['USER_TYPE']; ?></span></td>
                                 <td><span><?php echo $row['ACTIVE']; ?></span></td>
                                 <td style='text-align:center; vertical-align:middle'>
-                                    <button onclick="window.location.href='UserAction.php?MODE=V&USERID=<?php echo $row['USER_ID']; ?>'
-                                                    <?php echo $NoRecordsFound ? 'disabled': ''; ?>;">Modify User</button></td>
+                                    <button onclick="window.location.href='UserAction.php?MODE=V&USERID=<?php echo $row['USER_ID']; ?>'Modify User</button></td>
                             </tr>
                 <?php
                         }
