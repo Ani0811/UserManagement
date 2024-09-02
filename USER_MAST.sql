@@ -1,5 +1,8 @@
-CREATE DATABASE testDB;
-CREATE TABLE testDB.`user_mast` (
+CREATE DATABASE UserDB;
+
+USE UserDB;
+
+CREATE TABLE UserDB.`user_mast` (
   `USER_ID` int NOT NULL AUTO_INCREMENT,
   `USER_NAME` varchar(30) DEFAULT NULL,
   `USER_LOC` varchar(50) DEFAULT NULL,
